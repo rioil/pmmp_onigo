@@ -20,6 +20,9 @@ class Main extends PluginBase implements Listener{
     //このクラスを格納
     private static $plugin;
 
+    //鬼プレイヤーの配列
+    private static $oni = []; 
+
 
     //plugin読み込み時に実行
     public function onLoad(){
@@ -88,5 +91,22 @@ class Main extends PluginBase implements Listener{
                 }
             }
         }
+    }
+
+    //鬼を設定
+    public static function setOni(player $oni) :bool{
+
+        if ($oni != NULL){
+            self::$oni = $oni;
+            return 1;
+        }
+        else return 0;
+    }
+
+    //鬼を取得
+    public static function getOni(){
+            
+        return self::$oni;
+        
     }
 }
