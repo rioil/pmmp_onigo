@@ -43,7 +43,19 @@ class TeamCommand extends Command{
                 break;
 
                 case 'oni':
+
+                    //オンラインプレイヤーの配列取得
+                    $players = $this->getServer()->getOnlinePlayers();
+
+                    //人数をカウント
+                    $population = count($players);
+
+                    //配列の何番目のプレイヤーを鬼にするか決める
+                    $oni = $players[random_int(0,$population)];
                     
+                    //鬼をセット
+                    Main::setOni($oni);
+
                 break;
 
                 case 'suniiku':
