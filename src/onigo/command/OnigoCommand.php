@@ -10,9 +10,10 @@ use pocketmine\command\CommandSender;
 use pocketmine\Server;
 use pocketmine\utils\Utils;
 use pocketmine\utils\Config;
+use pocketmine\item\Item;
 use onigo\Main;
 
-class TeamCommand extends Command{
+class OnigoCommand extends Command{
 
     /** TODO:変数の型一覧記載 @var */
 
@@ -23,42 +24,95 @@ class TeamCommand extends Command{
         $usageMessage = '/onigo [操作]'; //使い方の説明
         $aliases = array('oni'); //コマンドエイリアス
         parent::__construct($name, $description, $usageMessage, $aliases);
-
-        $permission = 'onigo.command'; //パーミッションノード
-        $this->setPermission($permission);
+       
     }
 
     public function execute(CommandSender $sender, string $label, array $args) : bool {
 
+        //パーミッションチェックをそれぞれ追加
         if(isset($args[0])){
 
             switch (strtolower($args[0])){
     
                 case 'start':
+
+                //need bug fix
+
+                    if(!$sender->hasPermission('onigo.command.manage')){
+                        $sender->sendMessage('コマンドの実行権限がありません');
+                        break;
+                    }
+
+                    //鬼が指定されていなければ指定
+                    if(empty(Main::getOni()) === true){
+
+                        if(Main::setOni()){
+                            $sender->sendMessage('鬼を自動的に指定しました');
+                        }
+                        else{
+                            $sender->sendMessage('オンラインプレイヤーがいません');
+                            break;
+                        }
+                        
+                    }
+
+                    //全員の持ち物をクリア
+                    foreach(Main::getPlugin()->getServer()->getOnlinePlayers() as $player){
+                        $player->getInventory()->clearAll();
+                    }
+
+                    //鬼の準備
+                    $oni = Main::getOni();
+                    $armor = $oni->getArmorInventory();
+
+                    //防具の装着
+                    $armor->setHelmet(Item::get('314',0,1)); //帽子
+                    $armor->setChestplate(Item::get('315',0,1)); //チェストプレート
+                    $armor->setLeggings(Item::get('316',0,1)); //レギンス
+                    $armor->setBoots(Item::get('317',0,1)); //靴
+
+                    //武器装備
+                    $oni->getInventory()->setItem(0,Item::get('276',0,1));
+
+                    //鬼にメッセージ送信
+                    $oni->addTitle('鬼に選ばれました！','',5, 50, 5);
+
                     
                 break;
 
                 case 'stop':
+
+                    if(!$sender->hasPermission('onigo.command.manage')){
+                        $sender->sendMessage('コマンドの実行権限がありません');
+                        break;
+                    }
                     
                 break;
 
                 case 'oni':
 
-                    //オンラインプレイヤーの配列取得
-                    $players = $this->getServer()->getOnlinePlayers();
+                    if(!$sender->hasPermission('onigo.command.manage')){
+                        $sender->sendMessage('コマンドの実行権限がありません');
+                        break;
+                    }
 
-                    //人数をカウント
-                    $population = count($players);
-
-                    //配列の何番目のプレイヤーを鬼にするか決める
-                    $oni = $players[random_int(0,$population)];
-                    
-                    //鬼をセット
-                    Main::setOni($oni);
+                    //鬼を設定
+                    if(Main::setOni()){
+                        //完了メッセージ
+                        $sender->sendMessage('鬼を決定しました');
+                    }
+                    else{
+                        $sender->sendMessage('オンラインプレイヤーがいません');
+                    }
 
                 break;
 
                 case 'suniiku':
+
+                    if(!$sender->hasPermission('onigo.command.manage')){
+                        $sender->sendMessage('コマンドの実行権限がありません');
+                        break;
+                    }
                     
                 break;
 

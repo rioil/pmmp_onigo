@@ -1,13 +1,14 @@
 #PMMPで鬼ごっこをするプラグイン
-name: 'Onigo',
-main: 'onigo\Main',
-version: '0.0.1',
-api: [3.0.0],
+name: 'Onigo'
+main: 'onigo\Main'
+version: '0.0.1'
+api: [3.0.0]
    
-permissions: {
+permissions: 
+ onigo.command.manage: 
+  default: 'op'
+  description: 'Allows to manage onigo.'
 
- onigo.command: {
-  default: 'op',
-  description: 'Allows to manage onigo.',
- }
-}
+ onigo.command.play:
+  default: true
+  description: 'Allows to play onigo.'

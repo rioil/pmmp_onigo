@@ -21,8 +21,14 @@ class Main extends PluginBase implements Listener{
     private static $plugin;
 
     //鬼プレイヤーの配列
-    private static $oni = []; 
+    private static $oni; 
 
+    //プラグインの設定ファイル
+    private $config;
+
+    //設定項目の配列
+    private static $settings = array('home_world','onigo_world','athletic_world');
+    private static $default_value = array('world','onigo','athletic');
 
     //plugin読み込み時に実行
     public function onLoad(){
@@ -31,17 +37,14 @@ class Main extends PluginBase implements Listener{
         if(!file_exists($this->getDataFolder())){
             @mkdir($this->getDataFolder());
         }
-        //プレイヤーファイルの保存場所作成
-        if(!file_exists($this->getDataFolder() . 'players')){
-            @mkdir($this->getDataFolder() . 'players');
-        }
-        //チームファイルの保存場所作成
-        if(!file_exists($this->getDataFolder() . 'teams')){
-            @mkdir($this->getDataFolder() . 'teams');
-        }
+
+        //設定ファイルの作成
+        $config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
+        //初期化
+        $this->initializeConfig();
         
         //コマンド処理クラスの指定
-        $class = '\\teamcolor\\command\\OnigoCommand'; //作成したクラスの場所(srcディレクトリより相対)
+        $class = '\\onigo\\command\\OnigoCommand'; //作成したクラスの場所(srcディレクトリより相対)
         $this->getServer()->getCommandMap()->register('OnigoCommand', new $class);
 
         //コマンドクラスでgetDatafolderを使うため
@@ -75,6 +78,20 @@ class Main extends PluginBase implements Listener{
         return self::$plugin;
     }
 
+    //configセットアップ
+    public function initializeConfig(){
+
+        //項目が正しく設定されていなければ初期値をセット
+        foreach ($this->settings as $key => $item) {
+
+            if(!$this->config->exists($item) || ($this->config->get($item) == NULL)){
+                $this->config->set($item, $this->default_value[$key]);
+            }
+        }
+        
+        return true;
+    }
+
     //TODO チームプレイヤーにメッセージ送信
     public static function sendMessageTeamPlayer(string $team, string $message){
 
@@ -94,13 +111,24 @@ class Main extends PluginBase implements Listener{
     }
 
     //鬼を設定
-    public static function setOni(player $oni) :bool{
+    public static function setOni() :bool{
 
-        if ($oni != NULL){
-            self::$oni = $oni;
-            return 1;
+        //オンラインプレイヤーの配列取得
+        $players = self::getPlugin()->getServer()->getOnlinePlayers();
+
+        //人数をカウント
+        $population = count($players);
+
+        if($population !== 0){
+            //配列の何番目のプレイヤーを鬼にするか決める
+            $n = random_int(0,$population - 1);
+            var_dump($n);
+            self::$oni = current(array_slice($players, $n, 1, true));
+            var_dump(self::$oni);
+        
+            return true;
         }
-        else return 0;
+        else return false;
     }
 
     //鬼を取得
