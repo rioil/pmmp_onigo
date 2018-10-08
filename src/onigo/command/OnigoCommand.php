@@ -11,6 +11,9 @@ use pocketmine\Server;
 use pocketmine\utils\Utils;
 use pocketmine\utils\Config;
 use pocketmine\item\Item;
+use pocketmine\math\Vector3;
+use pocketmine\level\Position;
+
 use onigo\Main;
 
 class OnigoCommand extends Command{
@@ -24,7 +27,7 @@ class OnigoCommand extends Command{
         $usageMessage = '/onigo [操作]'; //使い方の説明
         $aliases = array('oni'); //コマンドエイリアス
         parent::__construct($name, $description, $usageMessage, $aliases);
-       
+
     }
 
     public function execute(CommandSender $sender, string $label, array $args) : bool {
@@ -33,7 +36,7 @@ class OnigoCommand extends Command{
         if(isset($args[0])){
 
             switch (strtolower($args[0])){
-    
+
                 case 'start':
 
                 //need bug fix
@@ -53,17 +56,32 @@ class OnigoCommand extends Command{
                             $sender->sendMessage('オンラインプレイヤーがいません');
                             break;
                         }
-                        
-                    }
 
-                    //全員の持ち物をクリア
-                    foreach(Main::getPlugin()->getServer()->getOnlinePlayers() as $player){
-                        $player->getInventory()->clearAll();
                     }
 
                     //鬼の準備
                     $oni = Main::getOni();
                     $armor = $oni->getArmorInventory();
+
+                    //tp先の準備
+                    $pos_array = Main::getTpPosition('player');
+                    $pos_player = new Position($pos_array['x'],$pos_array['y'],$pos_array['z'],$pos_array['world']);
+
+
+                    //全員の持ち物をクリア・ゲームモードをサバイバルに設定→tp
+                    foreach(Main::getPlugin()->getServer()->getOnlinePlayers() as $player){
+
+                        $player->getInventory()->clearAll();
+                        $player->setGamemode(0);
+
+                        //tp
+                        if($player !== $oni){
+                            $player->teleport($pos_player);
+                        }
+                        else{
+                            $player->teleport($pos_oni);
+                        }
+                    }
 
                     //防具の装着
                     $armor->setHelmet(Item::get('314',0,1)); //帽子
@@ -77,7 +95,7 @@ class OnigoCommand extends Command{
                     //鬼にメッセージ送信
                     $oni->addTitle('鬼に選ばれました！','',5, 50, 5);
 
-                    
+
                 break;
 
                 case 'stop':
@@ -86,7 +104,7 @@ class OnigoCommand extends Command{
                         $sender->sendMessage('コマンドの実行権限がありません');
                         break;
                     }
-                    
+
                 break;
 
                 case 'oni':
@@ -113,7 +131,7 @@ class OnigoCommand extends Command{
                         $sender->sendMessage('コマンドの実行権限がありません');
                         break;
                     }
-                    
+
                 break;
 
             }
@@ -126,7 +144,7 @@ class OnigoCommand extends Command{
             $sender->sendMessage('oni:鬼の数を指定');
             $sender->sendMessage('suniiku:ネームタグを非表示にする');
         }
-        
+
 
         return true;
 

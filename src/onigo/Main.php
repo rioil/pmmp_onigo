@@ -21,14 +21,17 @@ class Main extends PluginBase implements Listener{
     private static $plugin;
 
     //鬼プレイヤーの配列
-    private static $oni; 
+    private static $oni;
 
     //プラグインの設定ファイル
     private $config;
 
     //設定項目の配列
-    private static $settings = array('home_world','onigo_world','athletic_world');
-    private static $default_value = array('world','onigo','athletic');
+    private static $worlds = array('home','onigo','athletic');
+    private static $default_worlds = array('world','onigo','athletic');
+
+    private static $positions = array('home_tp','player_tp','oni_tp');
+    private static $default_positions = array(array('x' => 0,'y' => 70,'z' => 0),array('x' => 0,'y' => 70,'z' => 0),array('x' => 30,'y' => 70,'z' => 30));
 
     //plugin読み込み時に実行
     public function onLoad(){
@@ -40,9 +43,9 @@ class Main extends PluginBase implements Listener{
 
         //設定ファイルの作成
         $config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
-        //初期化
-        $this->initializeConfig();
-        
+        //コンフィグのチェック
+        $this->checkConfig();
+
         //コマンド処理クラスの指定
         $class = '\\onigo\\command\\OnigoCommand'; //作成したクラスの場所(srcディレクトリより相対)
         $this->getServer()->getCommandMap()->register('OnigoCommand', new $class);
@@ -69,7 +72,7 @@ class Main extends PluginBase implements Listener{
     public function onPlayerQuit(PlayerQuitEvent $event){
 
         //抜けたプレイヤーを取得
-        $player = $event->getPlayer();  
+        $player = $event->getPlayer();
 
     }
 
@@ -78,17 +81,49 @@ class Main extends PluginBase implements Listener{
         return self::$plugin;
     }
 
-    //configセットアップ
-    public function initializeConfig(){
+    //TODO config check !debug!
+    public function checkConfig(){
 
-        //項目が正しく設定されていなければ初期値をセット
-        foreach ($this->settings as $key => $item) {
+        //tp先ワールド名のチェック
+        foreach ($this->worlds as $key => $item) {
 
-            if(!$this->config->exists($item) || ($this->config->get($item) == NULL)){
-                $this->config->set($item, $this->default_value[$key]);
+            if(!$this->config->exists($item) || (trim($this->config->get($item)) === '')){
+
+                $default = $this->default_worlds[$key];
+                $this->config->set($item, $default);
+
             }
         }
-        
+
+        foreach ($this->positions as $key => $item) {
+
+            //各tp地点の座標チェック
+            if($this->config->exists($item)){
+
+                $this->vector = array('x','y','z');
+
+                foreach($this->vector as $xyz){
+
+                    //xyzを順番に調べる
+                    if(isset($item[$xyz])){
+
+                        //座標が正しく指定されていることを確認
+                        if(!preg_match("/^[0-9]+$/",$item[$xyz])){
+
+                            //不正な値であればデフォルト値をセット
+                            $this->config->set($item, $this->default_positions[$key]);
+                            //修正したらチェック終了
+                            break;
+                        }
+                    }
+                }
+            }
+            else{
+                //項目が存在しなければデフォルト値をセット
+                $this->config->set($item, $this->default_positions[$key]);
+            }
+        }
+
         return true;
     }
 
@@ -125,7 +160,7 @@ class Main extends PluginBase implements Listener{
             var_dump($n);
             self::$oni = current(array_slice($players, $n, 1, true));
             var_dump(self::$oni);
-        
+
             return true;
         }
         else return false;
@@ -133,8 +168,28 @@ class Main extends PluginBase implements Listener{
 
     //鬼を取得
     public static function getOni(){
-            
+
         return self::$oni;
-        
+
+    }
+
+    //tp先の取得
+    public static function getTpPosition(string $group)
+    {
+        switch ($group){
+
+            case 'player':
+                $pos_array = self::$config->get('player_tp');
+                $pos_array['world'] = self::$config->get('onigo');
+                return $pos_array;
+
+            case 'oni':
+                $pos_array = self::$config->get('oni_tp');
+                $pos_array['world'] = self::$config->get('onigo');
+                return $pos_array;
+
+            default:
+                return false;
+        }
     }
 }
