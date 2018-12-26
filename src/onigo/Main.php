@@ -23,7 +23,7 @@ class Main extends PluginBase implements Listener{
     //鬼プレイヤーの配列
     private static $oni;
 
-    //プラグインの設定ファイル
+    //TODO 生成処理　プラグインの設定ファイル
     private $config;
 
     //設定項目の配列
@@ -41,8 +41,10 @@ class Main extends PluginBase implements Listener{
             @mkdir($this->getDataFolder());
         }
 
+        $this->getLogger()->info('Checking Config!');
         //設定ファイルの作成
-        $config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
+        $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
+        var_dump($this->config);
         //コンフィグのチェック
         $this->checkConfig();
 
@@ -82,20 +84,21 @@ class Main extends PluginBase implements Listener{
     }
 
     //TODO config check !debug!
-    public function checkConfig(){
+    private function checkConfig(){
 
         //tp先ワールド名のチェック
-        foreach ($this->worlds as $key => $item) {
+        foreach (self::$worlds as $key => $item) {
 
+            var_dump($item);
             if(!$this->config->exists($item) || (trim($this->config->get($item)) === '')){
 
-                $default = $this->default_worlds[$key];
+                $default = self::$default_worlds[$key];
                 $this->config->set($item, $default);
 
             }
         }
 
-        foreach ($this->positions as $key => $item) {
+        foreach (self::$positions as $key => $item) {
 
             //各tp地点の座標チェック
             if($this->config->exists($item)){
@@ -111,7 +114,7 @@ class Main extends PluginBase implements Listener{
                         if(!preg_match("/^[0-9]+$/",$item[$xyz])){
 
                             //不正な値であればデフォルト値をセット
-                            $this->config->set($item, $this->default_positions[$key]);
+                            $this->config->set($item, self::$default_positions[$key]);
                             //修正したらチェック終了
                             break;
                         }
@@ -120,7 +123,7 @@ class Main extends PluginBase implements Listener{
             }
             else{
                 //項目が存在しなければデフォルト値をセット
-                $this->config->set($item, $this->default_positions[$key]);
+                $this->config->set($item, self::$default_positions[$key]);
             }
         }
 
