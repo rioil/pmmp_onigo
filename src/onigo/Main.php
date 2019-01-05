@@ -2,18 +2,21 @@
 
 namespace onigo;
 
-use pocketmine\Player;
+/* 不要なものは削除
+    use pocketmine\Player;
+    use pocketmine\plugin\Plugin;
+    use pocketmine\command\Command;
+    use pocketmine\command\CommandSender;
+    use pocketmine\Server;
+    use pocketmine\utils\Utils;
+    use pocketmine\event\server\CommandEvent;
+*/
 use pocketmine\plugin\PluginBase;
-use pocketmine\plugin\Plugin;
-use pocketmine\command\Command;
-use pocketmine\command\CommandSender;
-use pocketmine\Server;
-use pocketmine\utils\Utils;
 use pocketmine\utils\Config;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerQuitEvent;
-use pocketmine\event\server\CommandEvent;
+
 
 class Main extends PluginBase implements Listener{
 

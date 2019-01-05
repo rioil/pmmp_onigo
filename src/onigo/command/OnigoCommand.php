@@ -2,16 +2,18 @@
 
 namespace onigo\command;
 
-use pocketmine\Player;
-use pocketmine\plugin\PluginBase;
+/* 不要なものは削除
+    use pocketmine\Player;
+    use pocketmine\plugin\PluginBase;
+    use pocketmine\Server;
+    use pocketmine\utils\Utils;
+    use pocketmine\utils\Config;
+    use pocketmine\math\Vector3;
+*/
+use pocketmine\item\Item;
 use pocketmine\plugin\Plugin;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\Server;
-use pocketmine\utils\Utils;
-use pocketmine\utils\Config;
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
 use pocketmine\level\Position;
 
 use onigo\Main;
