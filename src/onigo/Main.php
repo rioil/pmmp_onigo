@@ -26,15 +26,15 @@ class Main extends PluginBase implements Listener{
     //鬼プレイヤーの配列
     private static $oni;
 
-    //TODO 生成処理　プラグインの設定ファイル
-    private $config;
+    //プラグインの設定ファイル
+    private static $config;
 
     //設定項目の配列
     private static $worlds = array('home','onigo','athletic');
     private static $default_worlds = array('world','onigo','athletic');
 
     private static $positions = array('home_tp','player_tp','oni_tp');
-    private static $default_positions = array(array('x' => 0,'y' => 70,'z' => 0),array('x' => 0,'y' => 70,'z' => 0),array('x' => 30,'y' => 70,'z' => 30));
+    private static $default_positions = array(array('x' => 0,'y' => 70,'z' => 0),array('x' => 0,'y' => 70,'z' => 0),array('x' => 100,'y' => 70,'z' => 100));
 
     //plugin読み込み時に実行
     public function onLoad(){
@@ -44,16 +44,19 @@ class Main extends PluginBase implements Listener{
             @mkdir($this->getDataFolder());
         }
 
-        $this->getLogger()->info('Checking Config!');
+
         //設定ファイルの作成
-        $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
-        var_dump($this->config);
+        self::$config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
+        var_dump(self::$config);
+
         //コンフィグのチェック
+        $this->getLogger()->info('Checking Config!');
         $this->checkConfig();
+        $this->getLogger()->info('Config check completed!');
 
         //コマンド処理クラスの指定
-        $class = '\\onigo\\command\\OnigoCommand'; //作成したクラスの場所(srcディレクトリより相対)
-        $this->getServer()->getCommandMap()->register('OnigoCommand', new $class);
+        $this->class = '\\onigo\\command\\OnigoCommand'; //作成したクラスの場所(srcディレクトリより相対)
+        $this->getServer()->getCommandMap()->register('OnigoCommand', new $this->class);
 
         //コマンドクラスでgetDatafolderを使うため
         self::$plugin = $this;
@@ -77,7 +80,7 @@ class Main extends PluginBase implements Listener{
     public function onPlayerQuit(PlayerQuitEvent $event){
 
         //抜けたプレイヤーを取得
-        $player = $event->getPlayer();
+        $this->player = $event->getPlayer();
 
     }
 
@@ -86,48 +89,57 @@ class Main extends PluginBase implements Listener{
         return self::$plugin;
     }
 
-    //TODO config check !debug!
     private function checkConfig(){
 
         //tp先ワールド名のチェック
-        foreach (self::$worlds as $key => $item) {
+        foreach (self::$worlds as $this->key => $this->item) {
 
-            var_dump($item);
-            if(!$this->config->exists($item) || (trim($this->config->get($item)) === '')){
+            var_dump($this->key);
+            var_dump($this->item);
+            if(!self::$config->exists($this->item) || (trim(self::$config->get($this->item)) === '')){
 
-                $default = self::$default_worlds[$key];
-                $this->config->set($item, $default);
+                $this->default = self::$default_worlds[$this->key];
+                self::$config->set($this->item, $this->default);
 
             }
         }
 
-        foreach (self::$positions as $key => $item) {
+        foreach (self::$positions as $this->key => $this->item) {
 
             //各tp地点の座標チェック
-            if($this->config->exists($item)){
+            if(self::$config->exists($this->item)){
 
                 $this->vector = array('x','y','z');
 
-                foreach($this->vector as $xyz){
+                foreach($this->vector as $this->xyz){
 
                     //xyzを順番に調べる
-                    if(isset($item[$xyz])){
+                    if(isset($this->item[$this->xyz])){
 
                         //座標が正しく指定されていることを確認
-                        if(!preg_match("/^[0-9]+$/",$item[$xyz])){
+                        if(!preg_match("/^[0-9]+$this->/",$this->item[$this->xyz])){
 
                             //不正な値であればデフォルト値をセット
-                            $this->config->set($item, self::$default_positions[$key]);
+                            self::$config->set($this->item, self::$default_positions[$this->key]);
+                            var_dump($this->key);
                             //修正したらチェック終了
                             break;
                         }
+                    }
+                    else{
+
+                        //設定されていなければデフォルト値をセット
+                        self::$config->set($this->item, self::$default_positions[$this->key]);
+                        var_dump($this->key);
                     }
                 }
             }
             else{
                 //項目が存在しなければデフォルト値をセット
-                $this->config->set($item, self::$default_positions[$key]);
+                self::$config->set($this->item, self::$default_positions[$this->key]);
             }
+
+            self::$config->save();
         }
 
         return true;
@@ -140,6 +152,7 @@ class Main extends PluginBase implements Listener{
 
             foreach(self::getPlugin()->getServer()->getOnlinePlayers() as $players){
 
+                //TODO 未実装の関数　self::getPlayerConfig
                 $players_config = self::getPlayerConfig($players->getName());
                 $players_team = $players_config->get('team');
 
@@ -185,12 +198,12 @@ class Main extends PluginBase implements Listener{
         switch ($group){
 
             case 'player':
-                $pos_array = self::$config->get('player_tp');
+                $pos_array = Main::$config->get('player_tp');
                 $pos_array['world'] = self::$config->get('onigo');
                 return $pos_array;
 
             case 'oni':
-                $pos_array = self::$config->get('oni_tp');
+                $pos_array = Main::$config->get('oni_tp');
                 $pos_array['world'] = self::$config->get('onigo');
                 return $pos_array;
 
