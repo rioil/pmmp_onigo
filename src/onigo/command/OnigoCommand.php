@@ -8,6 +8,8 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\level\Position;
 use onigo\Task\onigoTimeManageTask;
+use pocketmine\entity\Effect;
+use pocketmine\entity\EffectInstance;
 
 //use pocketmine\level\LevelManager;
 
@@ -58,7 +60,7 @@ class OnigoCommand extends Command{
 
                     //鬼の準備
                     $this->oni = Main::getOni();
-                    $this->armor = $this->oni->getArmorInventory();
+                    $this->armor = $this->oni->getArmorInventory(); //TODO たまにバグる。要調査
 
                     //tp先の準備
                     $this->pos_array_player = Main::getTpPosition('player');
@@ -95,6 +97,17 @@ class OnigoCommand extends Command{
 
                     //武器装備
                     $this->oni->getInventory()->setItem(0,Item::get('276',0,1));
+
+                    //effectをすべて除去
+                    $this->oni->removeAllEffects();
+                    //ポーションイフェクト付与
+                    $game_time = 600; //TODO リリース時はconfigから設定可能にする等の変更が必要
+                    $duration = 20 * ($game_time + 30);
+                    $this->oni->addEffect(new EffectInstance(Effect::getEffect('1'), $duration, 1, false)); //移動速度上昇2
+                    $this->oni->addEffect(new EffectInstance(Effect::getEffect('5'), $duration, 9, false)); //攻撃力上昇10（ワンパン）
+                    $this->oni->addEffect(new EffectInstance(Effect::getEffect('6'), $duration, 9, false)); //即時回復10（空腹に耐える）
+                    $this->oni->addEffect(new EffectInstance(Effect::getEffect('17'), $duration, 49, false)); //空腹50
+                    //$playerはプレイヤーオブジェクト、$effectIDはエフェクト番号、$durationは実行するtick数、$amplificationは強さ、$visibleはtrueで透明、falseで可視
 
                     //鬼にメッセージ送信
                     $this->oni->addTitle('鬼に選ばれました！','',5, 50, 5);

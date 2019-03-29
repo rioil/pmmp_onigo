@@ -25,10 +25,18 @@ class onigoTimeManageTask extends Task{
     //全員をHOMEにtp
         foreach(Main::getPlugin()->getServer()->getOnlinePlayers() as $this->player){
 
+            //持ち物をクリアしクリエイティブモードに変更
             $this->player->getInventory()->clearAll();
+            $this->armor = $this->player->getArmorInventory();
+            $this->armor->clearAll();
             $this->player->setGamemode(1);
+            //金リンゴを付与
             $this->player->getInventory()->setItem(1,Item::get('322',0,1));
 
+            //effectをすべて除去
+            $this->player->removeAllEffects();
+
+            //tp
             $this->player->teleport($this->pos_home);
 
             $this->player->addTitle('試合終了！','',5, 50, 5);

@@ -12,11 +12,11 @@
         鬼ごっこ開始
         全員に焼豚配布
 
-    /onigo stop 
+    /onigo stop
         鬼ごっこ強制終了
 
-    /onigo oni <数>
-        鬼の数指定
+    /onigo oni <数>or<MCID>
+        鬼の数指定orMCIDで直接指定
 
     /onigo suniiku
         参加者全員のネームタグを非表示に

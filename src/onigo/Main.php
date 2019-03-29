@@ -57,6 +57,13 @@ class Main extends PluginBase implements Listener{
     public function onEnable(){
 
         $this->getServer()->getPluginManager()->registerEvents($this,$this); //イベント登録
+
+        //ワールド読み込み
+        foreach (self::$worlds as $this->world) {
+          $this->load_world = trim(self::$config->get($this->world));
+          $this->getServer()->loadLevel($this->load_world);
+        }
+
         $this->getLogger()->info('Ready!');
     }
 
@@ -101,8 +108,6 @@ class Main extends PluginBase implements Listener{
                 $this->getServer()->generateLevel($this->checking_world, null, "pocketmine\level\generator\Flat", ["preset" => "2;7,2x3,2;1;"]);
                 $this->getLogger()->info('ワールド' . $this->checking_world . 'を新たに生成しました');
             }
-
-            $this->getServer()->loadLevel($this->checking_world);
         }
 
         //各tp地点の座標チェック
