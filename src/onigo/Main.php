@@ -23,8 +23,8 @@ class Main extends PluginBase implements Listener{
     private static $worlds = array('home','onigo','athletic');
     private static $default_worlds = array('world','onigo','athletic');
 
-    private static $positions = array('home_tp','player_tp','oni_tp');
-    private static $default_positions = array(array('x' => 0,'y' => 70,'z' => 0),array('x' => 0,'y' => 70,'z' => 0),array('x' => 100,'y' => 70,'z' => 100));
+    private static $positions = array('home_tp','player_tp','oni_tp','athletic_tp');
+    private static $default_positions = array(array('x' => 0,'y' => 5,'z' => 0),array('x' => 0,'y' => 5,'z' => 0),array('x' => 100,'y' => 5,'z' => 100),array('x' => 100,'y' => 5,'z' => 100));
 
     //plugin読み込み時に実行
     public function onLoad(){
