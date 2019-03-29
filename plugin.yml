@@ -3,9 +3,9 @@ name: 'Onigo'
 main: 'onigo\Main'
 version: '0.0.1'
 api: [3.0.0]
-   
-permissions: 
- onigo.command.manage: 
+
+permissions:
+ onigo.command.manage:
   default: 'op'
   description: 'Allows to manage onigo.'
 
