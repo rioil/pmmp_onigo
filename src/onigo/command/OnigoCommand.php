@@ -2,21 +2,12 @@
 
 namespace onigo\command;
 
-/* 不要なものは削除
-    use pocketmine\Player;
-    use pocketmine\plugin\PluginBase;
-    use pocketmine\Server;
-    use pocketmine\utils\Utils;
-    use pocketmine\utils\Config;
-    use pocketmine\math\Vector3;
-*/
 use pocketmine\item\Item;
 use pocketmine\plugin\Plugin;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\level\Position;
-use pocketmine\level\LevelManager;
-
+//use pocketmine\level\LevelManager;
 
 use onigo\Main;
 
@@ -70,6 +61,7 @@ class OnigoCommand extends Command{
                     //tp先の準備
                     $this->pos_array_player = Main::getTpPosition('player');
 
+                    \var_dump($this->pos_array_player['world']);
                     $this->tp_world = Main::getPlugin()->getServer()->getLevelByName($this->pos_array_player['world']);
                     $this->pos_player = new Position($this->pos_array_player['x'],$this->pos_array_player['y'],$this->pos_array_player['z'],$this->tp_world);
 
@@ -82,6 +74,7 @@ class OnigoCommand extends Command{
 
                         $this->player->getInventory()->clearAll();
                         $this->player->setGamemode(0);
+                        $this->player->getInventory()->setItem(1,Item::get('320',0,64));
 
                         //tp
                         if($this->player !== $this->oni){
@@ -114,6 +107,13 @@ class OnigoCommand extends Command{
                     if(!$sender->hasPermission('onigo.command.manage')){
                         $sender->sendMessage('コマンドの実行権限がありません');
                         break;
+                    }
+                    else{
+
+                        $this->pos_array_home = Main::getTpPosition('home');
+                        $this->home_world = Main::getPlugin()->getServer()->getLevelByName($this->pos_array_home['world']);
+                        $this->pos_home = new Position($this->pos_array_home['x'],$this->pos_array_home['y'],$this->pos_array_home['z'],$this->home_world);
+                        $sender->getPlayer()->teleport($this->pos_home);
                     }
 
                 break;

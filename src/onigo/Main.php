@@ -2,21 +2,11 @@
 
 namespace onigo;
 
-/* 不要なものは削除
-    use pocketmine\Player;
-    use pocketmine\plugin\Plugin;
-    use pocketmine\command\Command;
-    use pocketmine\command\CommandSender;
-    use pocketmine\Server;
-    use pocketmine\utils\Utils;
-    use pocketmine\event\server\CommandEvent;
-*/
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerQuitEvent;
-
 
 class Main extends PluginBase implements Listener{
 
@@ -44,10 +34,9 @@ class Main extends PluginBase implements Listener{
             @mkdir($this->getDataFolder());
         }
 
-
         //設定ファイルの作成
         self::$config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
-        var_dump(self::$config);
+        \var_dump(self::$config);
 
         //コンフィグのチェック
         $this->getLogger()->info('Checking Config!');
@@ -92,54 +81,75 @@ class Main extends PluginBase implements Listener{
     private function checkConfig(){
 
         //tp先ワールド名のチェック
-        foreach (self::$worlds as $this->key => $this->item) {
+        foreach (self::$worlds as $this->key => $this->tp_dest) {
 
-            var_dump($this->key);
-            var_dump($this->item);
-            if(!self::$config->exists($this->item) || (trim(self::$config->get($this->item)) === '')){
+            \var_dump($this->key);
+            \var_dump($this->tp_dest);
+            //ワールド名が不正でないか確認
+            if(!self::$config->exists($this->tp_dest) || (trim(self::$config->get($this->tp_dest)) == null)){
 
                 $this->default = self::$default_worlds[$this->key];
-                self::$config->set($this->item, $this->default);
+                self::$config->set($this->tp_dest, $this->default);
+                self::$config->save();
 
             }
+
+            //ワールドが存在しなければ生成
+            $this->checking_world = trim(self::$config->get($this->tp_dest));
+            if(!$this->getServer()->isLevelGenerated($this->checking_world)){
+
+                $this->getServer()->generateLevel($this->checking_world, null, "pocketmine\level\generator\Flat", ["preset" => "2;7,2x3,2;1;"]);
+                $this->getLogger()->info('ワールド' . $this->checking_world . 'を新たに生成しました');
+            }
+
+            $this->getServer()->loadLevel($this->checking_world);
         }
 
-        foreach (self::$positions as $this->key => $this->item) {
+        //各tp地点の座標チェック
+        //TODO 地面に埋まることを回避,大きすぎる値・負数を自動修正する
+        $this->vector = array('x','y','z');
 
-            //各tp地点の座標チェック
-            if(self::$config->exists($this->item)){
+        foreach (self::$positions as $this->key => $this->tp_dest) {
 
-                $this->vector = array('x','y','z');
+            if(self::$config->exists($this->tp_dest)){
+
+                $check_coordinates = self::$config->get($this->tp_dest);
 
                 foreach($this->vector as $this->xyz){
 
                     //xyzを順番に調べる
-                    if(isset($this->item[$this->xyz])){
+                    if(isset($check_coordinates[$this->xyz])){
 
                         //座標が正しく指定されていることを確認
-                        if(!preg_match("/^[0-9]+$this->/",$this->item[$this->xyz])){
+                        if(!is_int($check_coordinates[$this->xyz])){
 
                             //不正な値であればデフォルト値をセット
-                            self::$config->set($this->item, self::$default_positions[$this->key]);
-                            var_dump($this->key);
+                            $this->getLogger()->info($this->tp_dest . 'の' . $this->xyz . 'は不正です1');
+                            self::$config->set($this->tp_dest, self::$default_positions[$this->key]);
+                            self::$config->save();
+                            \var_dump($this->key);
                             //修正したらチェック終了
                             break;
                         }
+                        $this->getLogger()->info($this->tp_dest . 'の' . $this->xyz . 'は通過です1');
                     }
                     else{
 
                         //設定されていなければデフォルト値をセット
-                        self::$config->set($this->item, self::$default_positions[$this->key]);
-                        var_dump($this->key);
+                        self::$config->set($this->tp_dest, self::$default_positions[$this->key]);
+                        self::$config->save();
+                        \var_dump($this->key);
+                        $this->getLogger()->info($this->tp_dest . 'の' . $this->xyz . 'は不正です2');
+                        break;
                     }
                 }
             }
             else{
                 //項目が存在しなければデフォルト値をセット
-                self::$config->set($this->item, self::$default_positions[$this->key]);
+                self::$config->set($this->tp_dest, self::$default_positions[$this->key]);
+                self::$config->save();
+                $this->getLogger()->info($this->tp_dest . 'は不正です3');
             }
-
-            self::$config->save();
         }
 
         return true;
@@ -176,9 +186,9 @@ class Main extends PluginBase implements Listener{
         if($population !== 0){
             //配列の何番目のプレイヤーを鬼にするか決める
             $n = random_int(0,$population - 1);
-            var_dump($n);
+            \var_dump($n);
             self::$oni = current(array_slice($players, $n, 1, true));
-            var_dump(self::$oni);
+            \var_dump(self::$oni);
 
             return true;
         }
@@ -198,13 +208,18 @@ class Main extends PluginBase implements Listener{
         switch ($group){
 
             case 'player':
-                $pos_array = Main::$config->get('player_tp');
+                $pos_array = self::$config->get('player_tp');
                 $pos_array['world'] = self::$config->get('onigo');
                 return $pos_array;
 
             case 'oni':
-                $pos_array = Main::$config->get('oni_tp');
+                $pos_array = self::$config->get('oni_tp');
                 $pos_array['world'] = self::$config->get('onigo');
+                return $pos_array;
+
+            case "home":
+                $pos_array = self::$config->get('home_tp');
+                $pos_array['world'] = self::$config->get('home');
                 return $pos_array;
 
             default:
