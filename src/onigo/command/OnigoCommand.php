@@ -7,6 +7,8 @@ use pocketmine\plugin\Plugin;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\level\Position;
+use onigo\Task\onigoTimeManageTask;
+
 //use pocketmine\level\LevelManager;
 
 use onigo\Main;
@@ -96,6 +98,14 @@ class OnigoCommand extends Command{
 
                     //鬼にメッセージ送信
                     $this->oni->addTitle('鬼に選ばれました！','',5, 50, 5);
+
+                    //時間管理処理
+                    $this->pos_array_home = Main::getTpPosition('home');
+                    $this->home_world = Main::getPlugin()->getServer()->getLevelByName($this->pos_array_home['world']);;
+                    $pos_home = new Position($this->pos_array_home['x'],$this->pos_array_home['y'],$this->pos_array_home['z'],$this->home_world);
+                    $task = new onigoTimeManageTask(Main::getPlugin(),$pos_home);
+                    $time = 30 * 20; //TODO 30秒後の処理になります(完成時に変更)
+                    Main::getPlugin()->getScheduler()->scheduleDelayedTask($task, $time);
 
                     $sender->sendMessage('処理完了！！');
 
