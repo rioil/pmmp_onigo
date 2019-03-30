@@ -208,6 +208,7 @@ class Main extends PluginBase implements Listener{
     }
 
     //tp先の取得
+    //TODO Positionオブジェクトを返す方がコードがすっきりする
     public static function getTpPosition(string $group)
     {
         switch ($group){
@@ -230,5 +231,18 @@ class Main extends PluginBase implements Listener{
             default:
                 return false;
         }
+    }
+
+    //pocketmine-multitp-pluginのコピペ・要修正
+    public function playerBlockTouch(PlayerInteractEvent $event){
+
+      //タッチされたものがダイヤブロックか確認
+      if($event->getBlock()->getID() == 57){
+
+        //$tp_world = Main::getPlugin()->getServer()->getLevelByName($this->pos_array_player['world']);
+        //$this->pos_player = new Position($this->pos_array_player['x'],$this->pos_array_player['y'],$this->pos_array_player['z'],$this->tp_world);
+        $event->getPlayer()->teleport();
+        $event->getPlayer()->sendMessage("Teleporting...");
+      }
     }
 }
