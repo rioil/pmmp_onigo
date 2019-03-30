@@ -63,15 +63,8 @@ class OnigoCommand extends Command{
                     $this->armor = $this->oni->getArmorInventory(); //TODO たまにバグる。要調査
 
                     //tp先の準備
-                    $this->pos_array_player = Main::getTpPosition('player');
-
-                    \var_dump($this->pos_array_player['world']);
-                    $this->tp_world = Main::getPlugin()->getServer()->getLevelByName($this->pos_array_player['world']);
-                    $this->pos_player = new Position($this->pos_array_player['x'],$this->pos_array_player['y'],$this->pos_array_player['z'],$this->tp_world);
-
-                    $this->pos_array_oni = Main::getTpPosition('oni');
-                    $this->pos_oni = new Position($this->pos_array_oni['x'],$this->pos_array_oni['y'],$this->pos_array_oni['z'],$this->tp_world);
-
+                    $this->pos_player = Main::getTpPosition('player');
+                    $this->pos_oni = Main::getTpPosstopition('oni');
 
                     //全員の持ち物をクリア・ゲームモードをサバイバルに設定→tp
                     foreach(Main::getPlugin()->getServer()->getOnlinePlayers() as $this->player){
@@ -113,9 +106,7 @@ class OnigoCommand extends Command{
                     $this->oni->addTitle('鬼に選ばれました！','',5, 50, 5);
 
                     //時間管理処理
-                    $this->pos_array_home = Main::getTpPosition('home');
-                    $this->home_world = Main::getPlugin()->getServer()->getLevelByName($this->pos_array_home['world']);;
-                    $pos_home = new Position($this->pos_array_home['x'],$this->pos_array_home['y'],$this->pos_array_home['z'],$this->home_world);
+                    $pos_home = Main::getTpPosition('home');
                     $task = new onigoTimeManageTask(Main::getPlugin(),$pos_home);
                     $time = 30 * 20; //TODO 30秒後の処理になります(完成時に変更)
                     Main::getPlugin()->getScheduler()->scheduleDelayedTask($task, $time);
@@ -128,15 +119,14 @@ class OnigoCommand extends Command{
                 case 'stop':
 
                     if(!$sender->hasPermission('onigo.command.manage')){
-                        $sender->sendMessage('コマンドの実行権限がありません');
-                        break;
+
+                      $sender->sendMessage('コマンドの実行権限がありません');
+                      break;
                     }
                     else{
 
-                        $this->pos_array_home = Main::getTpPosition('home');
-                        $this->home_world = Main::getPlugin()->getServer()->getLevelByName($this->pos_array_home['world']);
-                        $this->pos_home = new Position($this->pos_array_home['x'],$this->pos_array_home['y'],$this->pos_array_home['z'],$this->home_world);
-                        $sender->getPlayer()->teleport($this->pos_home);
+                      $this->pos_home = Main::getTpPosition('home');
+                      $sender->getPlayer()->teleport($this->pos_home);
                     }
 
                 break;

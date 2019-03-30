@@ -7,6 +7,8 @@ use pocketmine\utils\Config;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerQuitEvent;
+use pocketmine\event\player\PlayerInteractEvent;
+use pocketmine\level\Position;
 
 class Main extends PluginBase implements Listener{
 
@@ -25,6 +27,9 @@ class Main extends PluginBase implements Listener{
 
     private static $positions = array('home_tp','player_tp','oni_tp','athletic_tp');
     private static $default_positions = array(array('x' => 0,'y' => 5,'z' => 0),array('x' => 0,'y' => 5,'z' => 0),array('x' => 100,'y' => 5,'z' => 100),array('x' => 100,'y' => 5,'z' => 100));
+
+    //tp先ポジション
+    private static $pos = array();
 
     //plugin読み込み時に実行
     public function onLoad(){
@@ -63,6 +68,32 @@ class Main extends PluginBase implements Listener{
           $this->load_world = trim(self::$config->get($this->world));
           $this->getServer()->loadLevel($this->load_world);
         }
+
+        //TODO tp先ポジションの作成・べた書きどうにかならないかな
+
+          //HOME
+          $pos_array = self::$config->get('home_tp');
+          $pos_array['world'] = self::$config->get('home');
+          $tp_world = $this->getServer()->getLevelByName($pos_array['world']);
+          self::$pos['home'] = new Position($pos_array['x'],$pos_array['y'],$pos_array['z'],$tp_world);
+
+          //PLAYER
+          $pos_array = self::$config->get('player_tp');
+          $pos_array['world'] = self::$config->get('onigo');
+          $tp_world = $this->getServer()->getLevelByName($pos_array['world']);
+          self::$pos['player'] = new Position($pos_array['x'],$pos_array['y'],$pos_array['z'],$tp_world);
+
+          //ONI
+          $pos_array = self::$config->get('oni_tp');
+          $pos_array['world'] = self::$config->get('onigo');
+          $tp_world = $this->getServer()->getLevelByName($pos_array['world']);
+          self::$pos['oni'] = new Position($pos_array['x'],$pos_array['y'],$pos_array['z'],$tp_world);
+
+          //ATHLETIC
+          $pos_array = self::$config->get('athletic_tp');
+          $pos_array['world'] = self::$config->get('athletic');
+          $tp_world = $this->getServer()->getLevelByName($pos_array['world']);
+          self::$pos['athletic'] = new Position($pos_array['x'],$pos_array['y'],$pos_array['z'],$tp_world);
 
         $this->getLogger()->info('Ready!');
     }
@@ -208,28 +239,20 @@ class Main extends PluginBase implements Listener{
     }
 
     //tp先の取得
-    //TODO Positionオブジェクトを返す方がコードがすっきりする
     public static function getTpPosition(string $group)
     {
-        switch ($group){
+      switch ($group){
 
-            case 'player':
-                $pos_array = self::$config->get('player_tp');
-                $pos_array['world'] = self::$config->get('onigo');
-                return $pos_array;
+          case 'player':
+          case 'oni':
+          case 'home':
+          case 'athletic':
 
-            case 'oni':
-                $pos_array = self::$config->get('oni_tp');
-                $pos_array['world'] = self::$config->get('onigo');
-                return $pos_array;
+            return self::$pos[$group];
 
-            case "home":
-                $pos_array = self::$config->get('home_tp');
-                $pos_array['world'] = self::$config->get('home');
-                return $pos_array;
+          default:
 
-            default:
-                return false;
+            return false;
         }
     }
 
@@ -239,8 +262,8 @@ class Main extends PluginBase implements Listener{
       //タッチされたものがダイヤブロックか確認
       if($event->getBlock()->getID() == 57){
 
-        //$tp_world = Main::getPlugin()->getServer()->getLevelByName($this->pos_array_player['world']);
-        //$this->pos_player = new Position($this->pos_array_player['x'],$this->pos_array_player['y'],$this->pos_array_player['z'],$this->tp_world);
+        //$tp_world = Main::getPlugin()->getServer()->getLevelByName($pos_array_player['world']);
+        //self::$pos_player = new Position($pos_array_player['x'],$pos_array_player['y'],$pos_array_player['z'],$this->tp_world);
         $event->getPlayer()->teleport();
         $event->getPlayer()->sendMessage("Teleporting...");
       }
