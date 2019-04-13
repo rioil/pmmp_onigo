@@ -9,6 +9,7 @@ use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\level\Position;
+use pocketmine\item\Item;
 
 class Main extends PluginBase implements Listener{
 

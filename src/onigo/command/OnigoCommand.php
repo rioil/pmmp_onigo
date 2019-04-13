@@ -6,7 +6,6 @@ use pocketmine\item\Item;
 use pocketmine\plugin\Plugin;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\level\Position;
 use onigo\Task\onigoTimeManageTask;
 use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
@@ -64,7 +63,7 @@ class OnigoCommand extends Command{
 
                     //tp先の準備
                     $this->pos_player = Main::getTpPosition('player');
-                    $this->pos_oni = Main::getTpPosstopition('oni');
+                    $this->pos_oni = Main::getTpPosition('oni');
 
                     //全員の持ち物をクリア・ゲームモードをサバイバルに設定→tp
                     foreach(Main::getPlugin()->getServer()->getOnlinePlayers() as $this->player){
@@ -96,7 +95,7 @@ class OnigoCommand extends Command{
                     //ポーションイフェクト付与
                     $game_time = 600; //TODO リリース時はconfigから設定可能にする等の変更が必要
                     $duration = 20 * ($game_time + 30);
-                    $this->oni->addEffect(new EffectInstance(Effect::getEffect('2'), $duration, 5, false)); //移動速度上昇5
+                    $this->oni->addEffect(new EffectInstance(Effect::getEffect('2'), $duration, 0, false)); //移動速度低下2
                     $this->oni->addEffect(new EffectInstance(Effect::getEffect('5'), $duration, 9, false)); //攻撃力上昇10（ワンパン）
                     //$playerはプレイヤーオブジェクト、$effectIDはエフェクト番号、$durationは実行するtick数、$amplificationは強さ、$visibleはtrueで透明、falseで可視
 
@@ -122,8 +121,7 @@ class OnigoCommand extends Command{
                     }
                     else{
 
-                      $this->pos_home = Main::getTpPosition('home');
-                      $sender->getPlayer()->teleport($this->pos_home);
+                      Main::stopMatch();
                     }
 
                 break;
