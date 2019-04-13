@@ -104,8 +104,7 @@ class OnigoCommand extends Command{
                     $this->oni->addTitle('鬼に選ばれました！','',5, 50, 5);
 
                     //時間管理処理
-                    $pos_home = Main::getTpPosition('home');
-                    $task = new onigoTimeManageTask(Main::getPlugin(),$pos_home);
+                    $task = new onigoTimeManageTask(Main::getPlugin());
                     $time = 30 * 20; //TODO 30秒後の処理になります(完成時に変更)
                     Main::getPlugin()->getScheduler()->scheduleDelayedTask($task, $time);
 

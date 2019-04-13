@@ -256,6 +256,32 @@ class Main extends PluginBase implements Listener{
         }
     }
 
+    //試合終了処理
+    public static function stopMatch(){
+
+        $pos_home = self::getTpPosition('home');
+
+        //全員をHOMEにtp
+        foreach(self::getPlugin()->getServer()->getOnlinePlayers() as $player){
+
+            //持ち物をクリアしクリエイティブモードに変更
+            $player->getInventory()->clearAll();
+            $armor = $player->getArmorInventory();
+            $armor->clearAll();
+            $player->setGamemode(1);
+            //金リンゴを付与
+            $player->getInventory()->setItem(1,Item::get('322',0,1));
+
+            //effectをすべて除去
+            $player->removeAllEffects();
+
+            //tp
+            $player->teleport($pos_home);
+
+            $player->addTitle('試合終了！','',5, 50, 5);
+        }
+    }
+
     //pocketmine-multitp-pluginのコピペ・要修正
     public function playerBlockTouch(PlayerInteractEvent $event){
 
