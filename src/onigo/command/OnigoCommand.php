@@ -96,10 +96,8 @@ class OnigoCommand extends Command{
                     //ポーションイフェクト付与
                     $game_time = 600; //TODO リリース時はconfigから設定可能にする等の変更が必要
                     $duration = 20 * ($game_time + 30);
-                    $this->oni->addEffect(new EffectInstance(Effect::getEffect('1'), $duration, 1, false)); //移動速度上昇2
+                    $this->oni->addEffect(new EffectInstance(Effect::getEffect('2'), $duration, 5, false)); //移動速度上昇5
                     $this->oni->addEffect(new EffectInstance(Effect::getEffect('5'), $duration, 9, false)); //攻撃力上昇10（ワンパン）
-                    $this->oni->addEffect(new EffectInstance(Effect::getEffect('6'), $duration, 9, false)); //即時回復10（空腹に耐える）
-                    $this->oni->addEffect(new EffectInstance(Effect::getEffect('17'), $duration, 49, false)); //空腹50
                     //$playerはプレイヤーオブジェクト、$effectIDはエフェクト番号、$durationは実行するtick数、$amplificationは強さ、$visibleはtrueで透明、falseで可視
 
                     //鬼にメッセージ送信
