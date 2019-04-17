@@ -22,6 +22,9 @@ class Main extends PluginBase implements Listener{
     //鬼プレイヤーの配列(Player Object)
     private static $oni;
 
+    //鬼ごっこ実行中フラグ
+    private static $playing_flag;
+
     //プラグインの設定ファイル
     private static $config;
 
@@ -270,6 +273,16 @@ class Main extends PluginBase implements Listener{
 
             return false;
         }
+    }
+
+    //試合中に設定
+    public static function setFlag(bool $flag){
+        self::$playing_flag = $flag;
+    }
+
+    //試合中か確認
+    public static function getFlag(){
+        return self::$playing_flag;
     }
 
     //試合終了処理

@@ -44,17 +44,27 @@ class OnigoCommand extends Command{
                         break;
                     }
 
-                    //鬼が指定されていなければ指定
-                    if(empty(Main::getOni()) === true){
+                    //鬼を決定
+                    if(!Main::getFlag()){
 
                         if(Main::setOni()){
-                            $sender->sendMessage('鬼を自動的に指定しました');
+                            $sender->sendMessage('鬼を決定しました');
                         }
                         else{
                             $sender->sendMessage('オンラインプレイヤーがいません');
                             break;
                         }
+                    }
+                    else{
+                        $sender->sendMessage("試合中です\n\n新しく試合を開始するには先に現在の試合を\n終了する必要があります");
+                    }
 
+                    //試合中に設定
+                    if(Main::getFlag()){
+                        break;
+                    }
+                    else{
+                        Main::setFlag(true);
                     }
 
                     //鬼の準備
@@ -134,13 +144,14 @@ class OnigoCommand extends Command{
                     }
 
                     //鬼を設定
-                    if(Main::setOni()){
+                    /* if(Main::setOni()){
                         //完了メッセージ
                         $sender->sendMessage('鬼を決定しました');
                     }
                     else{
                         $sender->sendMessage('オンラインプレイヤーがいません');
-                    }
+                    } */
+                    $sender->sendMessage('無効化中');
 
                 break;
 
@@ -198,7 +209,7 @@ class OnigoCommand extends Command{
             $sender->sendMessage('：：：：：使い方：：：：：');
             $sender->sendMessage('start:鬼ごっこ開始');
             $sender->sendMessage('stop:鬼ごっこ強制終了');
-            $sender->sendMessage('oni:鬼の数を指定');
+            $sender->sendMessage('未実装　oni:鬼の数を指定');
             $sender->sendMessage('suniiku:ネームタグを非表示にする');
         }
 
