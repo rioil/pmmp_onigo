@@ -16,7 +16,7 @@ class Main extends PluginBase implements Listener{
     //このクラスを格納
     private static $plugin;
 
-    //鬼プレイヤーの配列
+    //鬼プレイヤーの配列(Player Object)
     private static $oni;
 
     //プラグインの設定ファイル
@@ -186,6 +186,11 @@ class Main extends PluginBase implements Listener{
                 self::$config->set($this->tp_dest, self::$default_positions[$this->key]);
                 self::$config->save();
                 $this->getLogger()->info($this->tp_dest . 'は不正です3');
+            }
+
+            //TODO ネームタグ設定
+            if(self::$config->exists('nametag')){
+                
             }
         }
 

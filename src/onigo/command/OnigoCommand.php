@@ -150,7 +150,45 @@ class OnigoCommand extends Command{
                         $sender->sendMessage('コマンドの実行権限がありません');
                         break;
                     }
+                    else{
+                        $entity->setNameTagVisible($bool);
+                    }
 
+                break;
+
+                case 'ridatu':
+
+                    if(!$sender->hasPermission('onigo.command.play')){
+                        $sender->sendMessage('コマンドの実行権限がありません');
+                        break;
+                    }
+
+                    //鬼の離脱を禁止
+                    $player = $sender->getPlayer();
+                    if($player = Main::getOni()){
+                        $sender->sendMessage('鬼は離脱できません');
+                        break;
+                    }
+
+                    //持ち物をクリアしクリエイティブモードに変更
+                    $player->getInventory()->clearAll();
+                    $armor = $player->getArmorInventory();
+                    $armor->clearAll();
+                    $player->setGamemode(1);
+                    //金リンゴを付与
+                    $player->getInventory()->setItem(1,Item::get('322',0,1));
+
+                    //effectをすべて除去
+                    $player->removeAllEffects();
+
+                    //tp
+                    $player->teleport(Main::getTpPosition('home'));
+                    $sender->sendMessage('離脱しました');
+
+                break;
+
+                default:
+                    $sender->sendMessage("引数が不正です\n/onigoで使い方を確認できます");
                 break;
 
             }
