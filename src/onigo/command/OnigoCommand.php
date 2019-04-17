@@ -66,7 +66,7 @@ class OnigoCommand extends Command{
                     $this->pos_oni = Main::getTpPosition('oni');
 
                     //全員の持ち物をクリア・ゲームモードをサバイバルに設定→tp
-                    foreach(Main::getPlugin()->getServer()->getOnlinePlayers() as $this->player){
+                    foreach(Main::getPlaying() as $this->player){
 
                         $this->player->getInventory()->clearAll();
                         $this->player->setGamemode(0);

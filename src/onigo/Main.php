@@ -16,6 +16,9 @@ class Main extends PluginBase implements Listener{
     //このクラスを格納
     private static $plugin;
 
+    //プレイヤーの配列(Player Object Array)
+    private static $playing;
+
     //鬼プレイヤーの配列(Player Object)
     private static $oni;
 
@@ -220,7 +223,7 @@ class Main extends PluginBase implements Listener{
     public static function setOni() :bool{
 
         //オンラインプレイヤーの配列取得
-        $players = self::getPlugin()->getServer()->getOnlinePlayers();
+        self::$playing = self::getPlugin()->getServer()->getOnlinePlayers();
 
         //人数をカウント
         $population = count($players);
@@ -235,6 +238,13 @@ class Main extends PluginBase implements Listener{
             return true;
         }
         else return false;
+    }
+
+    //鬼ごっこ参加者を取得
+    public static function getPlaying(){
+
+        return self::$playing;
+
     }
 
     //鬼を取得
@@ -268,7 +278,7 @@ class Main extends PluginBase implements Listener{
         $pos_home = self::getTpPosition('home');
 
         //全員をHOMEにtp
-        foreach(self::getPlugin()->getServer()->getOnlinePlayers() as $player){
+        foreach(self::getPlaying() as $player){
 
             //持ち物をクリアしクリエイティブモードに変更
             $player->getInventory()->clearAll();
