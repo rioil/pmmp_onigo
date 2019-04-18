@@ -56,16 +56,11 @@ class OnigoCommand extends Command{
                         }
                     }
                     else{
-                        $sender->sendMessage("試合中です\n\n新しく試合を開始するには先に現在の試合を\n終了する必要があります");
+                        $sender->sendMessage("試合中です\n\n新しく試合を開始する前に現在の試合を終了する必要があります");
                     }
 
                     //試合中に設定
-                    if(Main::getFlag()){
-                        break;
-                    }
-                    else{
-                        Main::setFlag(true);
-                    }
+                    Main::setFlag(true);
 
                     //鬼の準備
                     $this->oni = Main::getOni();

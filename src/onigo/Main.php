@@ -62,6 +62,9 @@ class Main extends PluginBase implements Listener{
         //コマンドクラスでgetDatafolderを使うため
         self::$plugin = $this;
 
+        //試合状態判定フラグ初期化
+        self::$playing_flag = false;
+
         $this->getLogger()->info('Loaded!');
     }
 
