@@ -8,6 +8,7 @@ use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\player\PlayerInteractEvent;
+use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\level\Position;
 use pocketmine\item\Item;
 
@@ -34,6 +35,8 @@ class Main extends PluginBase implements Listener{
 
     private static $positions = array('home_tp','player_tp','oni_tp','athletic_tp');
     private static $default_positions = array(array('x' => 0,'y' => 5,'z' => 0),array('x' => 0,'y' => 5,'z' => 0),array('x' => 100,'y' => 5,'z' => 100),array('x' => 100,'y' => 5,'z' => 100));
+
+    private static $n0oni; //鬼の数
 
     //tp先ポジション
     private static $pos = array();
@@ -121,6 +124,10 @@ class Main extends PluginBase implements Listener{
 
     }
 
+    public function onDeath(PlayerDeathEvent $event) {
+        $event->setKeepInventory(true);
+    }
+
     //このクラスのインスタンス取得
     public static function getPlugin(){
         return self::$plugin;
@@ -201,28 +208,22 @@ class Main extends PluginBase implements Listener{
             if(self::$config->exists('nametag')){
                 
             }
+
+            //鬼の数の指定確認
+            if(self::$config->exists('n0oni')){
+
+                if(!is_int(self::$config->get('n0oni'))){
+                    self::$config->set('n0oni', 1);
+                    self::$config->save();
+                }
+            }
+            else{
+                self::$config->set('n0oni', 1);
+                self::$config->save();
+            }
         }
 
         return true;
-    }
-
-    //TODO チームプレイヤーにメッセージ送信
-    public static function sendMessageTeamPlayer(string $team, string $message){
-
-        if($team != NULL){
-
-            foreach(self::getPlugin()->getServer()->getOnlinePlayers() as $players){
-
-                //TODO 未実装の関数　self::getPlayerConfig
-                $players_config = self::getPlayerConfig($players->getName());
-                $players_team = $players_config->get('team');
-
-                if($players_team === $team){
-                    //メッセージを送信
-                    $players->sendMessage($message);
-                }
-            }
-        }
     }
 
     //鬼を設定
@@ -233,6 +234,9 @@ class Main extends PluginBase implements Listener{
 
         //人数をカウント
         $population = count(self::$playing);
+
+        //配列をシャッフル
+        shuffle(self::$playing);
 
         if($population !== 0){
             //配列の何番目のプレイヤーを鬼にするか決める
@@ -246,17 +250,17 @@ class Main extends PluginBase implements Listener{
         else return false;
     }
 
-    //鬼ごっこ参加者を取得
-    public static function getPlaying(){
-
-        return self::$playing;
-
-    }
-
     //鬼を取得
     public static function getOni(){
 
         return self::$oni;
+
+    }
+
+    //鬼ごっこ参加者を取得
+    public static function getPlaying(){
+
+        return self::$playing;
 
     }
 
@@ -307,6 +311,9 @@ class Main extends PluginBase implements Listener{
             //effectをすべて除去
             $player->removeAllEffects();
 
+            //リスポーン地点を元に戻す
+            $player->setSpawn(Main::getTpPosition('home'));
+
             //tp
             $player->teleport($pos_home);
 
@@ -328,5 +335,24 @@ class Main extends PluginBase implements Listener{
         $event->getPlayer()->teleport();
         $event->getPlayer()->sendMessage("Teleporting...");
       }
+    }
+
+    //TODO チームプレイヤーにメッセージ送信
+    public static function sendMessageTeamPlayer(string $team, string $message){
+
+        if($team != NULL){
+
+            foreach(self::getPlugin()->getServer()->getOnlinePlayers() as $players){
+
+                //TODO 未実装の関数　self::getPlayerConfig
+                $players_config = self::getPlayerConfig($players->getName());
+                $players_team = $players_config->get('team');
+
+                if($players_team === $team){
+                    //メッセージを送信
+                    $players->sendMessage($message);
+                }
+            }
+        }
     }
 }
