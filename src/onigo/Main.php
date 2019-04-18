@@ -232,13 +232,13 @@ class Main extends PluginBase implements Listener{
         self::$playing = self::getPlugin()->getServer()->getOnlinePlayers();
 
         //人数をカウント
-        $population = count($players);
+        $population = count($playing);
 
         if($population !== 0){
             //配列の何番目のプレイヤーを鬼にするか決める
             $n = random_int(0,$population - 1);
             \var_dump($n);
-            self::$oni = current(array_slice($players, $n, 1, true));
+            self::$oni = current(array_slice($playing, $n, 1, true));
             \var_dump(self::$oni);
 
             return true;
