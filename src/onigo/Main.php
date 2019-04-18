@@ -310,6 +310,9 @@ class Main extends PluginBase implements Listener{
             //tp
             $player->teleport($pos_home);
 
+            //フラグの更新
+            self::setFlag(false);
+
             $player->addTitle('試合終了！','',5, 50, 5);
         }
     }

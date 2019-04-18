@@ -57,6 +57,7 @@ class OnigoCommand extends Command{
                     }
                     else{
                         $sender->sendMessage("試合中です\n\n新しく試合を開始する前に現在の試合を終了する必要があります");
+                        break;
                     }
 
                     //試合中に設定
