@@ -330,10 +330,9 @@ class Main extends PluginBase implements Listener{
       //タッチされたものがダイヤブロックか確認
       if($event->getBlock()->getID() == 57){
 
-        //$tp_world = Main::getPlugin()->getServer()->getLevelByName($pos_array_player['world']);
-        //self::$pos_player = new Position($pos_array_player['x'],$pos_array_player['y'],$pos_array_player['z'],$this->tp_world);
-        $event->getPlayer()->teleport();
-        $event->getPlayer()->sendMessage("Teleporting...");
+        $tp = self::getTpPosition('onigo');
+        $event->getPlayer()->teleport($tp);
+        $event->getPlayer()->sendMessage("復活！");
       }
     }
 
