@@ -330,7 +330,7 @@ class Main extends PluginBase implements Listener{
       //タッチされたものがダイヤブロックか確認
       if($event->getBlock()->getID() == 57){
 
-        $tp = self::getTpPosition('onigo');
+        $tp = self::getTpPosition('player');
         $event->getPlayer()->teleport($tp);
         $event->getPlayer()->sendMessage("復活！");
       }
