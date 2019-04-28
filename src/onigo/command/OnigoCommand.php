@@ -173,7 +173,7 @@ class OnigoCommand extends Command{
 
                     //鬼の離脱を禁止
                     $player = $sender->getPlayer();
-                    if($player = Main::getOni()){
+                    if($player == Main::getOni()){
                         $sender->sendMessage('鬼は離脱できません');
                         break;
                     }
