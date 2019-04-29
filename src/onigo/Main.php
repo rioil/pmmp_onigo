@@ -144,8 +144,6 @@ class Main extends PluginBase implements Listener{
         //tp先ワールド名のチェック
         foreach (self::$worlds as $this->key => $this->tp_dest) {
 
-            \var_dump($this->key);
-            \var_dump($this->tp_dest);
             //ワールド名が不正でないか確認
             if(!self::$config->exists($this->tp_dest) || (trim(self::$config->get($this->tp_dest)) == null)){
 
@@ -183,22 +181,17 @@ class Main extends PluginBase implements Listener{
                         if(!is_int($check_coordinates[$this->xyz])){
 
                             //不正な値であればデフォルト値をセット
-                            $this->getLogger()->info($this->tp_dest . 'の' . $this->xyz . 'は不正です1');
                             self::$config->set($this->tp_dest, self::$default_positions[$this->key]);
                             self::$config->save();
-                            \var_dump($this->key);
                             //修正したらチェック終了
                             break;
                         }
-                        $this->getLogger()->info($this->tp_dest . 'の' . $this->xyz . 'は通過です1');
                     }
                     else{
 
                         //設定されていなければデフォルト値をセット
                         self::$config->set($this->tp_dest, self::$default_positions[$this->key]);
                         self::$config->save();
-                        \var_dump($this->key);
-                        $this->getLogger()->info($this->tp_dest . 'の' . $this->xyz . 'は不正です2');
                         break;
                     }
                 }
@@ -207,7 +200,6 @@ class Main extends PluginBase implements Listener{
                 //項目が存在しなければデフォルト値をセット
                 self::$config->set($this->tp_dest, self::$default_positions[$this->key]);
                 self::$config->save();
-                $this->getLogger()->info($this->tp_dest . 'は不正です3');
             }
 
             //TODO ネームタグ設定
