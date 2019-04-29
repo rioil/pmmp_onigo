@@ -60,9 +60,6 @@ class OnigoCommand extends Command{
                         break;
                     }
 
-                    //試合中に設定
-                    Main::setFlag(true);
-
                     //鬼の準備
                     $this->oni = Main::getOni();
                     $this->armor = $this->oni->getArmorInventory(); //TODO たまにバグる。要調査
@@ -111,7 +108,7 @@ class OnigoCommand extends Command{
 
                     //時間管理処理
                     $task = new onigoTimeManageTask(Main::getPlugin());
-                    $time = 90 * 20; //TODO 60秒後の処理になります(完成時に変更)
+                    $time = 30 * 20; //TODO 60秒後の処理になります(完成時に変更)
                     Main::getPlugin()->getScheduler()->scheduleDelayedTask($task, $time);
 
                     $sender->sendMessage('処理完了！！');

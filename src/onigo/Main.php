@@ -18,7 +18,7 @@ class Main extends PluginBase implements Listener{
     private static $plugin;
 
     //プレイヤーの配列(Player Object Array)
-    private static $playing;
+    private static $playing = [];
 
     //鬼プレイヤーの配列(Player Object)
     private static $oni;
@@ -120,7 +120,13 @@ class Main extends PluginBase implements Listener{
     public function onPlayerQuit(PlayerQuitEvent $event){
 
         //抜けたプレイヤーを取得
-        $this->player = $event->getPlayer();
+        $player = $event->getPlayer();
+
+        //抜けたプレイヤーを配列から削除
+        $where = array_search($player,self::$playing);
+        if($where !== false){
+            array_splice(self::$playing,$where,1);
+        }
 
     }
 
@@ -229,6 +235,9 @@ class Main extends PluginBase implements Listener{
     //鬼を設定
     public static function setOni() :bool{
 
+        //試合中に設定
+        self::setFlag(true);
+
         //オンラインプレイヤーの配列取得
         self::$playing = self::getPlugin()->getServer()->getOnlinePlayers();
 
@@ -292,7 +301,7 @@ class Main extends PluginBase implements Listener{
         return self::$playing_flag;
     }
 
-    //試合終了処理
+    //試合終了処理　TODO プレイヤーが途中で抜けたときにNULLエラー発生
     public static function stopMatch(){
 
         $pos_home = self::getTpPosition('home');
@@ -317,11 +326,13 @@ class Main extends PluginBase implements Listener{
             //tp
             $player->teleport($pos_home);
 
-            //フラグの更新
-            self::setFlag(false);
-
             $player->addTitle('試合終了！','',5, 50, 5);
         }
+
+        //フラグの更新
+        self::setFlag(false);
+
+        self::getPlugin()->getLogger()->info('試合終了');
     }
 
     //pocketmine-multitp-pluginのコピペ・要修正
