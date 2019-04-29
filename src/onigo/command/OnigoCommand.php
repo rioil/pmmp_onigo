@@ -108,7 +108,7 @@ class OnigoCommand extends Command{
 
                     //時間管理処理
                     $task = new onigoTimeManageTask(Main::getPlugin());
-                    $time = 30 * 20; //TODO 60秒後の処理になります(完成時に変更)
+                    $time = 90 * 20; //TODO 60秒後の処理になります(完成時に変更)
                     Main::getPlugin()->getScheduler()->scheduleDelayedTask($task, $time);
 
                     $sender->sendMessage('処理完了！！');
@@ -156,7 +156,7 @@ class OnigoCommand extends Command{
                         break;
                     }
                     else{
-                        $entity->setNameTagVisible($bool);
+                        //TODO nametagの不可視化処理
                     }
 
                 break;

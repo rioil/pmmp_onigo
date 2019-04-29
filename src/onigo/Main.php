@@ -11,6 +11,7 @@ use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\level\Position;
 use pocketmine\item\Item;
+use pocketmine\Player;
 
 class Main extends PluginBase implements Listener{
 
@@ -51,7 +52,6 @@ class Main extends PluginBase implements Listener{
 
         //設定ファイルの作成
         self::$config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
-        \var_dump(self::$config);
 
         //コンフィグのチェック
         $this->getLogger()->info('Checking Config!');
@@ -113,6 +113,9 @@ class Main extends PluginBase implements Listener{
 
     //プレイヤーが入ったらコンフィグの生成
     public function onPlayerJoin(PlayerJoinEvent $event){
+
+        $player = $event->getPlayer();
+        $this->initPlayer($player);
 
     }
 
@@ -203,8 +206,10 @@ class Main extends PluginBase implements Listener{
             }
 
             //TODO ネームタグ設定
-            if(self::$config->exists('nametag')){
-                
+            if(!self::$config->exists('nametag') || !is_bool(self::$config->get('nametag'))){
+
+                self::$config->set('nametag', true);
+                self::$config->save();
             }
 
             //鬼の数の指定確認
@@ -242,9 +247,7 @@ class Main extends PluginBase implements Listener{
         if($population !== 0){
             //配列の何番目のプレイヤーを鬼にするか決める
             $n = random_int(0,$population - 1);
-            \var_dump($n);
             self::$oni = current(array_slice(self::$playing, $n, 1, true));
-            \var_dump(self::$oni);
 
             return true;
         }
@@ -301,22 +304,7 @@ class Main extends PluginBase implements Listener{
         //全員をHOMEにtp
         foreach(self::getPlaying() as $player){
 
-            //持ち物をクリアしクリエイティブモードに変更
-            $player->getInventory()->clearAll();
-            $armor = $player->getArmorInventory();
-            $armor->clearAll();
-            $player->setGamemode(1);
-            //金リンゴを付与
-            $player->getInventory()->setItem(1,Item::get('322',0,1));
-
-            //effectをすべて除去
-            $player->removeAllEffects();
-
-            //リスポーン地点を元に戻す
-            $player->setSpawn(Main::getTpPosition('home'));
-
-            //tp
-            $player->teleport($pos_home);
+            self::getPlugin()->initPlayer($player);
 
             $player->addTitle('試合終了！','',5, 50, 5);
         }
@@ -337,6 +325,34 @@ class Main extends PluginBase implements Listener{
         $event->getPlayer()->teleport($tp);
         $event->getPlayer()->sendMessage("復活！");
       }
+    }
+
+    private function initPlayer(Player $player){
+
+        if($player instanceof Player){
+
+            //respawn地点を設定
+            $pos_home = self::getTpPosition('home');
+            $player->setSpawn($pos_home);
+            $player->teleport($pos_home);
+
+            //持ち物をクリアしクリエイティブモードに変更
+            $player->getInventory()->clearAll();
+            $armor = $player->getArmorInventory();
+            $armor->clearAll();
+            $player->setGamemode(1);
+            //金リンゴを付与
+            $player->getInventory()->setItem(1,Item::get('322',0,1));
+
+            //effectをすべて除去
+            $player->removeAllEffects();
+
+            return true;
+        }
+        else{
+
+            return false;
+        }
     }
 
     //TODO チームプレイヤーにメッセージ送信
