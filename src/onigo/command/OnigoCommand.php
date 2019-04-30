@@ -9,6 +9,7 @@ use pocketmine\command\CommandSender;
 use onigo\Task\onigoTimeManageTask;
 use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
+use pocketmine\Player;
 
 //use pocketmine\level\LevelManager;
 
@@ -167,7 +168,7 @@ class OnigoCommand extends Command{
 
                 case 'ridatu':
 
-                    if(!$sender->hasPermission('onigo.command.play')){
+                    if(!$sender->hasPermission('onigo.command.play') || !($sender instanceof Player)){
                         $sender->sendMessage('コマンドの実行権限がありません');
                         break;
                     }
