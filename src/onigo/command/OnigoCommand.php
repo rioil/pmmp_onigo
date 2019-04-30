@@ -130,7 +130,13 @@ class OnigoCommand extends Command{
                     }
                     else{
 
-                      Main::stopMatch();
+                        if(Main::getFlag()){
+
+                            Main::stopMatch();
+                        }
+                        else{
+                            $sender->sendMessage('現在試合は行われていません');
+                        }
                     }
 
                 break;
