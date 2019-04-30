@@ -301,7 +301,7 @@ class Main extends PluginBase implements Listener{
         return self::$playing_flag;
     }
 
-    //試合終了処理　TODO プレイヤーが途中で抜けたときにNULLエラー発生
+    //試合終了処理
     public static function stopMatch(){
 
         $pos_home = self::getTpPosition('home');
