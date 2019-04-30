@@ -19,10 +19,10 @@ class Main extends PluginBase implements Listener{
     private static $plugin;
 
     //プレイヤーの配列(Player Object Array)
-    private static $playing = [];
+    private static $playing = array();
 
     //鬼プレイヤーの配列(Player Object)
-    private static $oni;
+    private static $oni = array();
 
     //鬼ごっこ実行中フラグ
     private static $playing_flag;
@@ -129,6 +129,11 @@ class Main extends PluginBase implements Listener{
         $where = array_search($player,self::$playing);
         if($where !== false){
             array_splice(self::$playing,$where,1);
+        }
+
+        if(in_array($player,self::$oni)){
+
+            //TODO 追加で鬼選ぶ処理
         }
 
     }
@@ -247,7 +252,7 @@ class Main extends PluginBase implements Listener{
         if($population !== 0){
             //配列の何番目のプレイヤーを鬼にするか決める
             $n = random_int(0,$population - 1);
-            self::$oni = current(array_slice(self::$playing, $n, 1, true));
+            self::$oni[] = current(array_slice(self::$playing, $n, 1, true));
 
             return true;
         }

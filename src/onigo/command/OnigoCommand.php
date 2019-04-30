@@ -62,14 +62,13 @@ class OnigoCommand extends Command{
 
                     //鬼の準備
                     $this->oni = Main::getOni();
-                    $this->armor = $this->oni->getArmorInventory(); //TODO たまにバグる。要調査
 
                     //tp先の準備
                     $this->pos_player = Main::getTpPosition('player');
                     $this->pos_oni = Main::getTpPosition('oni');
 
                     //全員の持ち物をクリア・ゲームモードをサバイバルに設定→tp
-                    foreach(Main::getPlaying() as $this->player){
+                    foreach (Main::getPlaying() as $this->player){
 
                         $this->player->getInventory()->clearAll();
                         $this->player->setGamemode(0);
@@ -77,34 +76,39 @@ class OnigoCommand extends Command{
                         $this->player->setSpawn(Main::getTpPosition('athletic'));
 
                         //tp
-                        if($this->player !== $this->oni){
-                            $this->player->teleport($this->pos_player);
+                        if(in_array($this->player,$this->oni)){
+                            $this->player->teleport($this->pos_oni);
                         }
                         else{
-                            $this->player->teleport($this->pos_oni);
+                            $this->player->teleport($this->pos_player);
                         }
                     }
 
-                    //防具の装着
-                    $this->armor->setHelmet(Item::get('314',0,1)); //帽子
-                    $this->armor->setChestplate(Item::get('315',0,1)); //チェストプレート
-                    $this->armor->setLeggings(Item::get('316',0,1)); //レギンス
-                    $this->armor->setBoots(Item::get('317',0,1)); //靴
+                    //鬼の準備
+                    foreach($this->oni as $oni){
 
-                    //武器装備
-                    $this->oni->getInventory()->setItem(0,Item::get('276',0,1));
+                        //防具の装着
+                        $armor = $oni->getArmorInventory(); //TODO たまにバグる。要調査
+                        $armor->setHelmet(Item::get('314',0,1)); //帽子
+                        $armor->setChestplate(Item::get('315',0,1)); //チェストプレート
+                        $armor->setLeggings(Item::get('316',0,1)); //レギンス
+                        $armor->setBoots(Item::get('317',0,1)); //靴
 
-                    //effectをすべて除去
-                    $this->oni->removeAllEffects();
-                    //ポーションイフェクト付与
-                    $game_time = 600; //TODO リリース時はconfigから設定可能にする等の変更が必要
-                    $duration = 20 * ($game_time + 30);
-                    $this->oni->addEffect(new EffectInstance(Effect::getEffect('2'), $duration, 0, false)); //移動速度低下2
-                    $this->oni->addEffect(new EffectInstance(Effect::getEffect('5'), $duration, 9, false)); //攻撃力上昇10（ワンパン）
-                    //$playerはプレイヤーオブジェクト、$effectIDはエフェクト番号、$durationは実行するtick数、$amplificationは強さ、$visibleはtrueで透明、falseで可視
+                        //武器装備
+                        $oni->getInventory()->setItem(0,Item::get('276',0,1));
 
-                    //鬼にメッセージ送信
-                    $this->oni->addTitle('鬼に選ばれました！','',5, 50, 5);
+                        //effectをすべて除去
+                        $oni->removeAllEffects();
+
+                        //ポーションイフェクト付与
+                        $game_time = 600; //TODO リリース時はconfigから設定可能にする等の変更が必要
+                        $duration = 20 * ($game_time + 30);
+                        $oni->addEffect(new EffectInstance(Effect::getEffect('2'), $duration, 0, false)); //移動速度低下2
+                        $oni->addEffect(new EffectInstance(Effect::getEffect('5'), $duration, 9, false)); //攻撃力上昇10（ワンパン）
+
+                        //鬼にメッセージ送信
+                        $oni->addTitle('鬼に選ばれました！','',5, 50, 5);
+                    }
 
                     //時間管理処理
                     $task = new onigoTimeManageTask(Main::getPlugin());
@@ -170,7 +174,8 @@ class OnigoCommand extends Command{
 
                     //鬼の離脱を禁止
                     $player = $sender->getPlayer();
-                    if($player == Main::getOni()){
+                    if(in_array($player,Main::getOni())){
+
                         $sender->sendMessage('鬼は離脱できません');
                         break;
                     }
