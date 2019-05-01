@@ -129,16 +129,18 @@ class OnigoCommand extends Command{
                         $sender->sendMessage('コマンドの実行権限がありません');
                         break;
                     }
-
-                    //鬼を設定
-                    /* if(Main::setOni()){
-                        //完了メッセージ
-                        $sender->sendMessage('鬼を決定しました');
-                    }
                     else{
-                        $sender->sendMessage('オンラインプレイヤーがいません');
-                    } */
-                    $sender->sendMessage('無効化中');
+
+                        if(isset($args[1]) && Main::setN0oni($args[1])){
+
+                            $sender->sendMessage('鬼の数は'. $args[1] .'人に設定されました');
+                            break;
+                        }
+                        else{
+
+                            $sender->sendMessage('人数を正しく指定してください');
+                        }
+                    }
 
                 break;
 
@@ -226,7 +228,7 @@ class OnigoCommand extends Command{
             $sender->sendMessage('：：：：：使い方：：：：：');
             $sender->sendMessage('start:鬼ごっこ開始');
             $sender->sendMessage('stop:鬼ごっこ強制終了');
-            $sender->sendMessage('未実装　oni:鬼の数を指定');
+            $sender->sendMessage('oni:鬼の数を指定');
             $sender->sendMessage('suniiku:ネームタグを非表示にする');
         }
 

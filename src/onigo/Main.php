@@ -302,16 +302,40 @@ class Main extends PluginBase implements Listener{
         //人数をカウント
         $population = count(self::$playing);
 
-        //配列をシャッフル
-        shuffle(self::$playing);
-
         if($population !== 0){
+
+            //配列をシャッフル
+            shuffle(self::$playing);
+
+            //鬼の人数を決める
+            if(self::getN0oni() <= ($population - 1)){
+
+                $number = self::getN0oni();
+            }
+            elseif($population === 1){
+
+                $number = $population;
+            }
+            else{
+
+                $number = $population - 1;
+            }
+
             //配列の何番目のプレイヤーを鬼にするか決める
-            $n = random_int(0,$population - 1);
-            self::$oni[] = current(array_slice(self::$playing, $n, 1, true));
+            for($i = 1; $i <= $number; $i++){
+
+                do{
+                    $n = random_int(0,$population - 1);
+                    $new_oni = current(array_slice(self::$playing, $n, 1, true));
+                } while(in_array($new_oni,self::$oni));
+
+                //新しい鬼を設定
+                self::$oni[] = $new_oni;
+            }
 
             return true;
         }
+
         else return false;
     }
 
@@ -346,6 +370,29 @@ class Main extends PluginBase implements Listener{
         $oni->addTitle('鬼に選ばれました！','',5, 50, 5);
     }
 
+    //鬼の数を設定
+    public static function setN0oni($number){
+
+        if(filter_var($number, FILTER_VALIDATE_INT) !== false){
+
+            if($number > 0){
+
+                self::$config->set('n0oni',$number);
+                self::$config->save();
+                return true;
+            }
+            else return false;
+        }
+        else return false;
+    }
+
+    //鬼の数を取得
+    public static function getN0oni(){
+
+        return self::$config->get('n0oni');
+    }
+
+
     //鬼ごっこ参加者を取得
     public static function getPlaying(){
 
@@ -371,7 +418,7 @@ class Main extends PluginBase implements Listener{
         }
     }
 
-    //tp先の取得
+    //試合時間の取得
     public static function getGametime()
     {
         return self::$config->get('game_time');
