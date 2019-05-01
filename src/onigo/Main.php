@@ -341,7 +341,7 @@ class Main extends PluginBase implements Listener{
         Main::$config->save();
     }
 
-    //pocketmine-multitp-pluginのコピペ・要修正
+    //ダイヤブロックタッチ時に復活
     public function playerBlockTouch(PlayerInteractEvent $event){
 
       //タッチされたものがダイヤブロックか確認
