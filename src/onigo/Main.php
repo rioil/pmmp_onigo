@@ -163,6 +163,8 @@ class Main extends PluginBase implements Listener{
                 //鬼の準備・TP
                 $new_oni->teleport(self::getTpPosition('oni'));
                 self::initOni($new_oni);
+                //お知らせ送信
+                self::sendMessagePlayingPlayer('鬼が抜けたため' . $new_oni->getName() . 'が新しく鬼になりました');
             }
         }
 
@@ -429,21 +431,13 @@ class Main extends PluginBase implements Listener{
     }
 
     //TODO チームプレイヤーにメッセージ送信
-    public static function sendMessageTeamPlayer(string $team, string $message){
+    public static function sendMessagePlayingPlayer(string $message){
 
-        if($team != NULL){
 
-            foreach(self::getPlugin()->getServer()->getOnlinePlayers() as $players){
+        foreach(self::$playing as $player){
 
-                //TODO 未実装の関数　self::getPlayerConfig
-                $players_config = self::getPlayerConfig($players->getName());
-                $players_team = $players_config->get('team');
-
-                if($players_team === $team){
-                    //メッセージを送信
-                    $players->sendMessage($message);
-                }
-            }
+            //メッセージを送信
+            $player->sendMessage($message);
         }
     }
 }

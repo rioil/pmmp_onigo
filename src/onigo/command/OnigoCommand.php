@@ -84,10 +84,14 @@ class OnigoCommand extends Command{
                     }
 
                     //鬼の準備
+                    Main::sendMessagePlayingPlayer("鬼は");
                     foreach($this->oni as $oni){
 
                         Main::initOni($oni);
+                        //お知らせ送信
+                        Main::sendMessagePlayingPlayer($oni->getName());
                     }
+                    Main::sendMessagePlayingPlayer('です');
 
                     //時間管理処理
                     $task = new onigoTimeManageTask(Main::getPlugin());
