@@ -7,8 +7,6 @@ use pocketmine\plugin\Plugin;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use onigo\Task\onigoTimeManageTask;
-use pocketmine\entity\Effect;
-use pocketmine\entity\EffectInstance;
 use pocketmine\Player;
 
 //use pocketmine\level\LevelManager;
@@ -88,27 +86,7 @@ class OnigoCommand extends Command{
                     //鬼の準備
                     foreach($this->oni as $oni){
 
-                        //防具の装着
-                        $armor = $oni->getArmorInventory(); //TODO たまにバグる。要調査
-                        $armor->setHelmet(Item::get('314',0,1)); //帽子
-                        $armor->setChestplate(Item::get('315',0,1)); //チェストプレート
-                        $armor->setLeggings(Item::get('316',0,1)); //レギンス
-                        $armor->setBoots(Item::get('317',0,1)); //靴
-
-                        //武器装備
-                        $oni->getInventory()->setItem(0,Item::get('276',0,1));
-
-                        //effectをすべて除去
-                        $oni->removeAllEffects();
-
-                        //ポーションイフェクト付与
-                        $game_time = 600; //TODO リリース時はconfigから設定可能にする等の変更が必要
-                        $duration = 20 * ($game_time + 30);
-                        $oni->addEffect(new EffectInstance(Effect::getEffect('2'), $duration, 0, false)); //移動速度低下2
-                        $oni->addEffect(new EffectInstance(Effect::getEffect('5'), $duration, 9, false)); //攻撃力上昇10（ワンパン）
-
-                        //鬼にメッセージ送信
-                        $oni->addTitle('鬼に選ばれました！','',5, 50, 5);
+                        Main::initOni($oni);
                     }
 
                     //時間管理処理

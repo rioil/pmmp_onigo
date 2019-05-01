@@ -12,6 +12,8 @@ use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\level\Position;
 use pocketmine\item\Item;
 use pocketmine\Player;
+use pocketmine\entity\Effect;
+use pocketmine\entity\EffectInstance;
 
 class Main extends PluginBase implements Listener{
 
@@ -36,8 +38,6 @@ class Main extends PluginBase implements Listener{
 
     private static $positions = array('home_tp','player_tp','oni_tp','athletic_tp');
     private static $default_positions = array(array('x' => 0,'y' => 5,'z' => 0),array('x' => 0,'y' => 5,'z' => 0),array('x' => 100,'y' => 5,'z' => 100),array('x' => 100,'y' => 5,'z' => 100));
-
-    private static $n0oni; //鬼の数
 
     //tp先ポジション
     private static $pos = array();
@@ -127,7 +127,7 @@ class Main extends PluginBase implements Listener{
         }
     }
 
-    //プレイヤーが鯖から抜けた時にチーム人数に反映
+    //プレイヤーが鯖から抜けた時の処理
     public function onPlayerQuit(PlayerQuitEvent $event){
 
         //抜けたプレイヤーを取得
@@ -142,6 +142,28 @@ class Main extends PluginBase implements Listener{
         if(in_array($player,self::$oni)){
 
             //TODO 追加で鬼選ぶ処理
+            //人数をカウント
+            $population = count(self::$playing);
+            $n0oni = self::$config->get('n0oni');
+
+            if($n0oni <= $population){
+
+                //配列をシャッフル
+                shuffle(self::$playing);
+
+                //配列の何番目のプレイヤーを鬼にするか決める
+                do{
+                    $n = random_int(0,$population - 1);
+                    $new_oni = current(array_slice(self::$playing, $n, 1, true));
+                } while(in_array($new_oni,self::$oni));
+
+                //新しい鬼を設定
+                self::$oni[] = $new_oni;
+
+                //鬼の準備・TP
+                $new_oni->teleport(self::getTpPosition('oni'));
+                self::initOni($new_oni);
+            }
         }
 
     }
@@ -228,14 +250,13 @@ class Main extends PluginBase implements Listener{
             //鬼の数の指定確認
             if(self::$config->exists('n0oni')){
 
-                if(!is_int(self::$config->get('n0oni'))){
+                $n0oni = self::$config->get('n0oni');
+
+                if(!is_int($n0oni) || $n0oni <= 0){
+
                     self::$config->set('n0oni', 1);
                     self::$config->save();
                 }
-            }
-            else{
-                self::$config->set('n0oni', 1);
-                self::$config->save();
             }
         }
 
@@ -272,6 +293,31 @@ class Main extends PluginBase implements Listener{
 
         return self::$oni;
 
+    }
+
+    public static function initOni(Player $oni){
+
+        //防具の装着
+        $armor = $oni->getArmorInventory(); //TODO たまにバグる。要調査
+        $armor->setHelmet(Item::get('314',0,1)); //帽子
+        $armor->setChestplate(Item::get('315',0,1)); //チェストプレート
+        $armor->setLeggings(Item::get('316',0,1)); //レギンス
+        $armor->setBoots(Item::get('317',0,1)); //靴
+
+        //武器装備
+        $oni->getInventory()->setItem(0,Item::get('276',0,1));
+
+        //effectをすべて除去
+        $oni->removeAllEffects();
+
+        //ポーションイフェクト付与
+        $game_time = 600; //TODO リリース時はconfigから設定可能にする等の変更が必要
+        $duration = 20 * ($game_time + 30);
+        $oni->addEffect(new EffectInstance(Effect::getEffect('2'), $duration, 0, false)); //移動速度低下2
+        $oni->addEffect(new EffectInstance(Effect::getEffect('5'), $duration, 9, false)); //攻撃力上昇10（ワンパン）
+
+        //鬼にメッセージ送信
+        $oni->addTitle('鬼に選ばれました！','',5, 50, 5);
     }
 
     //鬼ごっこ参加者を取得
