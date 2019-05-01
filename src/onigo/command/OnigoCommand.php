@@ -172,12 +172,12 @@ class OnigoCommand extends Command{
                         if(Main::getNametagStatus()){
 
                             $new_status = false;
-                            $sender->sendMessage('ネームタグを不可視化します' . Main::getNametagStatus());
+                            $sender->sendMessage('ネームタグを不可視化しました');
                         }
                         else{
 
                             $new_status = true;
-                            $sender->sendMessage('ネームタグを可視化します' . Main::getNametagStatus());
+                            $sender->sendMessage('ネームタグを可視化しました');
                         }
 
                         Main::setNametagStatus($new_status);
