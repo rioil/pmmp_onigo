@@ -268,6 +268,23 @@ class Main extends PluginBase implements Listener{
                 self::$config->set('n0oni', 1);
                 self::$config->save();
             }
+
+            //試合時間の指定確認
+            if(self::$config->exists('game_time')){
+
+                $time = self::$config->get('game_time');
+
+                if(!is_int($time) || $time <= 0){
+
+                    self::$config->set('game_time', self::$game_time );
+                    self::$config->save();
+                }
+            }
+            else{
+                //項目が存在しなければデフォルト値をセット
+                self::$config->set('game_time', self::$game_time);
+                self::$config->save();
+            }
         }
 
         return true;
