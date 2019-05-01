@@ -29,14 +29,11 @@ class OnigoCommand extends Command{
 
     public function execute(CommandSender $sender, string $label, array $args) : bool {
 
-        //パーミッションチェックをそれぞれ追加
         if(isset($args[0])){
 
             switch (strtolower($args[0])){
 
                 case 'start':
-
-                //need bug fix
 
                     if(!$sender->hasPermission('onigo.command.manage')){
                         $sender->sendMessage('コマンドの実行権限がありません');
