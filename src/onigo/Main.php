@@ -39,6 +39,8 @@ class Main extends PluginBase implements Listener{
     private static $positions = array('home_tp','player_tp','oni_tp','athletic_tp');
     private static $default_positions = array(array('x' => 0,'y' => 5,'z' => 0),array('x' => 0,'y' => 5,'z' => 0),array('x' => 100,'y' => 5,'z' => 100),array('x' => 100,'y' => 5,'z' => 100));
 
+    private static $game_time = 600;
+
     //tp先ポジション
     private static $pos = array();
 
@@ -260,6 +262,11 @@ class Main extends PluginBase implements Listener{
                     self::$config->set('n0oni', 1);
                     self::$config->save();
                 }
+            }
+            else{
+                //項目が存在しなければデフォルト値をセット
+                self::$config->set('n0oni', 1);
+                self::$config->save();
             }
         }
 
