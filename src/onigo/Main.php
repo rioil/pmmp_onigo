@@ -111,12 +111,20 @@ class Main extends PluginBase implements Listener{
         $this->getLogger()->info('Ready!');
     }
 
-    //プレイヤーが入ったらコンフィグの生成
+    //プレイヤーが入ったら初期化
     public function onPlayerJoin(PlayerJoinEvent $event){
 
         $player = $event->getPlayer();
         $this->initPlayer($player);
 
+        if(self::getNametagStatus()){
+
+            $player->setNameTag($player->getName());
+        }
+        else{
+
+            $player->setNameTag('');
+        }
     }
 
     //プレイヤーが鯖から抜けた時にチーム人数に反映
@@ -318,6 +326,19 @@ class Main extends PluginBase implements Listener{
         self::setFlag(false);
 
         self::getPlugin()->getLogger()->info('試合終了');
+    }
+
+    //nametagの設定を取得
+    public static function getNametagStatus(){
+
+        return Main::$config->get('nametag');
+    }
+
+    //nametagが見えるか設定
+    public static function setNametagStatus(bool $visibility){
+
+        Main::$config->set('nametag',$visibility);
+        Main::$config->save();
     }
 
     //pocketmine-multitp-pluginのコピペ・要修正

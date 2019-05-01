@@ -167,7 +167,36 @@ class OnigoCommand extends Command{
                         break;
                     }
                     else{
-                        //TODO nametagの不可視化処理
+
+                        //可視・不可視のトグル切り替え
+                        if(Main::getNametagStatus()){
+
+                            $new_status = false;
+                            $sender->sendMessage('ネームタグを不可視化します' . Main::getNametagStatus());
+                        }
+                        else{
+
+                            $new_status = true;
+                            $sender->sendMessage('ネームタグを可視化します' . Main::getNametagStatus());
+                        }
+
+                        Main::setNametagStatus($new_status);
+
+                        //nametagの可視・不可視切り替え
+                        if($new_status){
+
+                            foreach (Main::getPlugin()->getServer()->getOnlinePlayers() as $player){
+
+                                $player->setNameTag($player->getName());
+                            }
+                        }
+                        else{
+
+                            foreach (Main::getPlugin()->getServer()->getOnlinePlayers() as $player){
+
+                                $player->setNameTag('');
+                            }
+                        }
                     }
 
                 break;
