@@ -34,7 +34,7 @@ class Main extends PluginBase implements Listener{
 
     //設定項目の配列
     private static $worlds = array('home','onigo','athletic');
-    private static $default_worlds = array('world','onigo','athletic');
+    private static $default_worlds = array('home','onigo','athletic');
 
     private static $positions = array('home_tp','player_tp','oni_tp','athletic_tp');
     private static $default_positions = array(array('x' => 0,'y' => 5,'z' => 0),array('x' => 0,'y' => 5,'z' => 0),array('x' => 100,'y' => 5,'z' => 100),array('x' => 100,'y' => 5,'z' => 100));
