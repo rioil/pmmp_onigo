@@ -353,6 +353,7 @@ class Main extends PluginBase implements Listener{
       }
     }
 
+    //プレーヤー初期化（ゲーム開始時・鯖イン時用）
     private function initPlayer(Player $player){
 
         if($player instanceof Player){
