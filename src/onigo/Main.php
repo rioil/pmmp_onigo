@@ -141,7 +141,8 @@ class Main extends PluginBase implements Listener{
 
         if(in_array($player,self::$oni)){
 
-            //TODO 追加で鬼選ぶ処理
+            //追加で鬼選ぶ処理
+
             //人数をカウント
             $population = count(self::$playing);
             $n0oni = self::$config->get('n0oni');
@@ -242,7 +243,7 @@ class Main extends PluginBase implements Listener{
                 self::$config->save();
             }
 
-            //TODO ネームタグ設定
+            //ネームタグ設定
             if(!self::$config->exists('nametag') || !is_bool(self::$config->get('nametag'))){
 
                 self::$config->set('nametag', true);
@@ -430,7 +431,7 @@ class Main extends PluginBase implements Listener{
         }
     }
 
-    //TODO チームプレイヤーにメッセージ送信
+    //チームプレイヤーにメッセージ送信
     public static function sendMessagePlayingPlayer(string $message){
 
 
