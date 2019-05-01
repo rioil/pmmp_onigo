@@ -338,8 +338,7 @@ class Main extends PluginBase implements Listener{
         $oni->removeAllEffects();
 
         //ポーションイフェクト付与
-        $game_time = 600; //TODO リリース時はconfigから設定可能にする等の変更が必要
-        $duration = 20 * ($game_time + 30);
+        $duration = 20 * (self::getGametime() + 30);
         $oni->addEffect(new EffectInstance(Effect::getEffect('2'), $duration, 0, false)); //移動速度低下2
         $oni->addEffect(new EffectInstance(Effect::getEffect('5'), $duration, 9, false)); //攻撃力上昇10（ワンパン）
 
@@ -370,6 +369,12 @@ class Main extends PluginBase implements Listener{
 
             return false;
         }
+    }
+
+    //tp先の取得
+    public static function getGametime()
+    {
+        return self::$config->get('game_time');
     }
 
     //試合中に設定
