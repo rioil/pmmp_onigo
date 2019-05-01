@@ -18,7 +18,7 @@
     /onigo oni <数>or<MCID>
         鬼の数指定orMCIDで直接指定
 
-    /onigo suniiku
+    /onigo suniiku✔
         参加者全員のネームタグを非表示に
 
     <参加者>
